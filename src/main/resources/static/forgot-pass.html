@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forgot Password</title>
+    <meta charset="UTF-8">
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(115deg, #322e72, #5f59c0);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .forgot-container {
+            background: #fff;
+            padding: 30px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .forgot-container h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .forgot-container input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .forgot-container input:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 5px rgba(78,115,223,0.3);
+        }
+
+        .forgot-container button {
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(115deg, #322e72, #5f59c0);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .message {
+            font-size: 13px;
+            text-align: center;
+            color: red;
+        }
+
+        #resetSection {
+            display: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="forgot-container">
+
+    <h2>Forgot Password</h2>
+
+    <input type="email" id="forgotEmail" placeholder="Enter your email">
+    <button onclick="checkEmail()">Continue</button>
+
+    <p id="message" style="text-align:center; font-size:13px;"></p>
+
+    <div id="resetSection" style="display:none;">
+        <input type="password" id="newPassword" placeholder="New Password" ><br><br>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" ><br><br>
+        <button onclick="resetPassword()">Reset Password</button>
+    </div>
+
+</div>
+
+<script>
+
+function checkEmail() {
+
+    const email = document.getElementById("forgotEmail").value.trim();
+    const message = document.getElementById("message");
+    const resetSection = document.getElementById("resetSection");
+
+    if (!email) {
+        message.style.color = "red";
+        message.innerText = "Please enter email";
+        return;
+    }
+
+    fetch(`http://localhost:8080/api/teachers/check-email?email=${email}`)
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.exists) {
+                message.style.color = "green";
+                message.innerText = "Email verified. Enter new password.";
+                resetSection.style.display = "block";
+            } else {
+                message.style.color = "red";
+                message.innerText = "Email not found. Please register first.";
+                resetSection.style.display = "none";
+            }
+
+        })
+        .catch(() => {
+            message.style.color = "red";
+            message.innerText = "Server error!";
+        });
+}
+
+function resetPassword() {
+
+    const email = document.getElementById("forgotEmail").value.trim();
+    const newPassword = document.getElementById("newPassword").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    const message = document.getElementById("message");
+
+    // 🔴 1️⃣ Empty field validation
+    if (!newPassword || !confirmPassword) {
+        message.style.color = "red";
+        message.innerText = "Password fields cannot be empty!";
+        return;
+    }
+
+    // 🔴 2️⃣ Minimum length validation
+    if (newPassword.length < 6) {
+        message.style.color = "red";
+        message.innerText = "Password must be at least 6 characters!";
+        return;
+    }
+
+    // 🔴 3️⃣ Match validation
+    if (newPassword !== confirmPassword) {
+        message.style.color = "red";
+        message.innerText = "Passwords do not match!";
+        return;
+    }
+
+    // ✅ If all validations pass
+    fetch("http://localhost:8080/api/teachers/reset-password", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            newPassword: newPassword
+        })
+    })
+    .then(res => res.text())
+    .then(data => {
+        message.style.color = "green";
+        message.innerText = data;
+
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 2000);
+    })
+    .catch(() => {
+        message.style.color = "red";
+        message.innerText = "Server error!";
+    });
+
+}
+</script>
+
+</body>
+</html>

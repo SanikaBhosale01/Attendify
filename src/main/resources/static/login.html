@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendify · smart attendance</title>
+    <!-- Font & Icons (subtle) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <!-- floating background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="login-card">
+        <!-- LEFT BRAND PANEL (professional & friendly) -->
+        <div class="brand-panel">
+            <div class="brand-content">
+                <div class="brand-badge">
+                    ⚡ realtime · secure
+                    <span>v2.0</span>
+                </div>
+                <h1>
+                    Attendify
+                    <span>smart attendance</span>
+                </h1>
+                <div class="brand-features">
+                    <div class="feature-item">
+                        <span class="icon">📌</span> QR check‑in · one tap
+                    </div>
+                    <div class="feature-item">
+                        <span class="icon">📊</span> live analytics & insights
+                    </div>
+                    <div class="feature-item">
+                        <span class="icon">🔐</span> end‑to‑end encrypted
+                    </div>
+                </div>
+                <!-- tiny testimonial / extra -->
+                <div style="margin-top: 3rem; font-size: 0.9rem; opacity: 0.75; border-left: 2px solid rgba(255,255,255,0.35); padding-left: 1.2rem;">
+                    “seamless for teachers & students” <br>— 600+ institutions
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT FORM PANEL (UI/UX polished) -->
+        <div class="form-panel">
+            <div class="form-header">
+                <h2>welcome back</h2>
+                <p>choose role & sign in to your account</p>
+            </div>
+
+            <form id="loginForm">
+                <!-- ROLE selector with modern icon -->
+                <div class="input-group">
+                    <label>I am a</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <select id="role" required>
+                            <option value="student" selected>Student</option>
+                            <option value="teacher">Teacher / Faculty</option>
+                            <option value="admin">Administrator <span class="admin-badge">Admin</span></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="input-group">
+                    <label>Email address</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">✉️</span>
+                        <input type="email" id="email" placeholder="name@institution.edu" required>
+                    </div>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔑</span>
+                        <input type="password" id="password" placeholder="··········" required>
+                    </div>
+                    <div class="forgot-row">
+    <a href="forgot-pass.html" id="forgotBtn" class="forgot-link">forgot password?</a>
+</div>
+
+<!-- <div id="forgotSection" style="display:none; margin-top:15px;">
+    <input type="email" id="forgotEmail" placeholder="Enter your email">
+    <button type="button" onclick="checkEmail()">Continue</button>
+    <p id="forgotMsg" style="color:red;"></p>
+</div>
+
+<div id="resetSection" style="display:none; margin-top:15px;">
+    <input type="password" id="newPassword" placeholder="New Password"><br>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password">
+    <button type="button" onclick="resetPassword()">Reset Password</button>
+</div> -->
+
+                <button type="submit" class="login-btn">
+                    <span>→</span> Log in to dashboard
+                </button>
+
+                <div id="message" class="error-msg"></div>
+
+                <div class="register-link">New to Attendify?
+    <span id="registerBtn" role="button" tabindex="0">Create account</span>
+</div>
+
+</form>
+
+            <!-- subtle footer (no action) -->
+            <!-- <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; font-size: 0.75rem; color: #8d88b0;">
+                <span>🔒 SSL secured</span>
+                <span>📋 GDPR ready</span>
+            </div> -->
+        </div>
+    </div>
+
+    <script src="js\login.js"></script>
+   
+</body>
+</html>

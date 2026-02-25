@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendify · Student Dashboard</title>
+    <!-- same font as other pages for consistency -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Chart.js (already included) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/dashboard.css" />
+  </head>
+
+  <body>
+    <div class="layout">
+      <!-- Sidebar (same structure) -->
+      <div class="sidebar">
+        <h2>🎓 Student Panel</h2>
+        <ul>
+          <li onclick="showSection('home')">🏠 Dashboard</li>
+          <li onclick="showSection('attendance')">📅 Attendance</li>
+          <li onclick="showSection('profile')">👤 Profile</li>
+          <li onclick="showSection('changePasswordSection')">🔑 Change Password</li>
+          <li onclick="showSection('leaveReqSection')">📝 Leave Request</li>
+          <li onclick="logout()">🚪 Logout</li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main">
+        <div class="topbar">
+          <h1 id="welcomeText">Welcome</h1>
+        </div>
+
+        <!-- HOME -->
+        <section id="home" class="section">
+          <div class="cards">
+            <div class="card blue">
+              <h3>Total Classes</h3>
+              <p>120</p>
+            </div>
+            <div class="card green">
+              <h3>Present</h3>
+              <p>102</p>
+            </div>
+            <div class="card red">
+              <h3>Absent</h3>
+              <p>18</p>
+            </div>
+            <div class="card purple">
+              <h3>Attendance %</h3>
+              <p>85%</p>
+            </div>
+            <div
+              id="attendanceAlert"
+              class="card purple"
+              style="padding: 10px; margin: 10px 0; border-radius: 8px"
+            ></div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Attendance Overview</h3>
+            <div class="chart-container">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ATTENDANCE -->
+        <section id="attendance" class="section hidden">
+          <h2 style="margin-bottom: 1.5rem; color: #1e1a3a">
+            Attendance Records
+          </h2>
+
+          <!-- Attendance Stats Cards -->
+          <div class="attendance-stats">
+            <div class="stat-card">
+              <h4>
+                <span
+                  class="status-badge present"
+                  style="min-width: auto; padding: 4px 10px"
+                  >✓</span
+                >
+                Present
+              </h4>
+              <div class="stat-value"></div>
+              <div class="stat-progress">
+                <div class="stat-progress-bar present" style="width: 85%"></div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <h4>
+                <span
+                  class="status-badge absent"
+                  style="min-width: auto; padding: 4px 10px"
+                  >✗</span
+                >
+                Absent
+              </h4>
+              <div class="stat-value"></div>
+              <div class="stat-progress">
+                <div class="stat-progress-bar absent" style="width: 15%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Monthly Attendance Summary</h3>
+              <div class="table-filters">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Present</button>
+                <button class="filter-btn">Absent</button>
+                <button class="filter-btn">This Month</button>
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="profile" class="section hidden">
+          <div class="profile-card">
+            <div class="profile-header">
+              <div class="avatar">👩‍🎓</div>
+              <h2 id="profileName"></h2>
+              <p id="profileEmail"></p>
+            </div>
+
+            <div class="profile-info">
+              <div class="info-box">
+                <span>Class</span>
+                <p id="profileClass"></p>
+              </div>
+              <div class="info-box">
+                <span>Roll No</span>
+                <p id="profileRoll"></p>
+              </div>
+              <div class="info-box">
+                <span>Attendance</span>
+                <p id="attendancePercent">0%</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHANGE PASSWORD SECTION -->
+        <section id="changePasswordSection" class="section hidden">
+          <h2 style="margin-bottom: 1.5rem; color: #1e1a3a">Change Password</h2>
+
+          <div class="leave-form">
+            <input
+              type="password"
+              id="oldPassword"
+              placeholder="Enter Old Password"
+              required
+            />
+            <br /><br />
+
+            <input
+              type="password"
+              id="newPassword"
+              placeholder="Enter New Password"
+              required
+            />
+            <br /><br />
+
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm New Password"
+              required
+            />
+            <br /><br />
+
+            <button onclick="changePassword()">Update Password</button>
+
+            <p
+              id="passwordMessage"
+              style="margin-top: 15px; font-weight: bold"
+            ></p>
+          </div>
+        </section>
+
+        <!-- LEAVE REQUEST -->
+        <section id="leaveReqSection" class="section hidden">
+          <h2 style="margin-bottom: 1.5rem; color: #1e1a3a">Leave Request</h2>
+
+          <div class="leave-form">
+            <input type="date" id="fromDate" required /><br /><br />
+            <input type="date" id="toDate" required /><br /><br />
+            <textarea
+              id="reason"
+              placeholder="Enter reason"
+              required
+            ></textarea>
+            <br /><br />
+            <button onclick="submitLeave()">Submit</button>
+          </div>
+
+          <h3 style="margin-top: 30px">Your Leave Requests</h3>
+
+          <div class="table-wrapper">
+            <table id="leaveTable">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- YOUR EXACT JS (unchanged) -->
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>
