@@ -8,10 +8,12 @@
     <!-- same font as other pages for consistency -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
     <!-- Chart.js (already included) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
+    <!-- <style>
         /* ===== RESET & BASE ===== */
         * {
             margin: 0;
@@ -105,7 +107,7 @@
             padding: 1.6rem 2.2rem;
             margin-bottom: 2rem;
             box-shadow: 0 15px 35px -12px rgba(40, 30, 70, 0.2),
-                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             display: flex;
             align-items: center;
             animation: slideDown 0.5s ease;
@@ -144,7 +146,7 @@
             border-radius: 28px;
             padding: 2rem 1.8rem;
             box-shadow: 0 15px 35px -10px rgba(60, 45, 90, 0.15),
-                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             transition: all 0.3s ease;
             border: none;
             position: relative;
@@ -192,7 +194,7 @@
             border-radius: 32px;
             padding: 2rem;
             box-shadow: 0 15px 35px -10px rgba(60, 45, 90, 0.15),
-                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             max-width: 600px;
             margin: 2rem auto 0;
         }
@@ -225,7 +227,7 @@
             border-radius: 28px;
             padding: 2rem;
             box-shadow: 0 15px 25px -8px rgba(60, 45, 90, 0.12),
-                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
         }
 
         .stat-card h4 {
@@ -272,7 +274,7 @@
             backdrop-filter: blur(12px);
             border-radius: 32px;
             box-shadow: 0 15px 35px -10px rgba(60, 45, 90, 0.15),
-                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             overflow: hidden;
             margin-top: 1.5rem;
         }
@@ -366,7 +368,7 @@
             backdrop-filter: blur(12px);
             border-radius: 40px;
             box-shadow: 0 20px 40px -12px rgba(40, 30, 70, 0.25),
-                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             max-width: 800px;
             margin: 0 auto;
             overflow: hidden;
@@ -438,29 +440,75 @@
 
         /* ===== ANIMATIONS ===== */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideDown {
-            from { transform: translateY(-15px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(-15px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
-            .layout { flex-direction: column; }
-            .sidebar { width: 100%; padding: 1.5rem; flex-direction: row; align-items: center; }
-            .sidebar h2 { margin-bottom: 0; padding: 0 1rem; }
-            .sidebar ul { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0; }
-            .sidebar li { margin: 0; padding: 0.8rem 1.2rem; }
-            .main { padding: 1.5rem; }
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1.5rem;
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .sidebar h2 {
+                margin-bottom: 0;
+                padding: 0 1rem;
+            }
+
+            .sidebar ul {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-top: 0;
+            }
+
+            .sidebar li {
+                margin: 0;
+                padding: 0.8rem 1.2rem;
+            }
+
+            .main {
+                padding: 1.5rem;
+            }
         }
 
         @media (max-width: 550px) {
-            .sidebar { flex-direction: column; align-items: flex-start; }
-            .cards { grid-template-columns: 1fr; }
-            .profile-info { grid-template-columns: 1fr; }
+            .sidebar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-info {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* extra polish */
@@ -479,7 +527,9 @@
             padding: 0.3rem 1rem;
             display: inline-block;
         }
-    </style>
+    </style> -->
+
+    <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 
 <body>
@@ -497,6 +547,8 @@
                 <li onclick="showSection('home')">🏠 Dashboard</li>
                 <li onclick="showSection('attendance')">📅 Attendance</li>
                 <li onclick="showSection('profile')">👤 Profile</li>
+                <li onclick="showSection('notesSection')">📚Available Notes</li>
+                <li onclick="showSection('leaveReqSection')">📝 Leave Request</li>
                 <li onclick="logout()">🚪 Logout</li>
             </ul>
         </div>
@@ -527,8 +579,8 @@
                         <p>85%</p>
                     </div>
                     <div id="attendanceAlert" class="card purple"
-     style="padding:10px; margin:10px 0; border-radius:8px;">
-</div>
+                        style="padding:10px; margin:10px 0; border-radius:8px;">
+                    </div>
                 </div>
 
                 <div class="chart-card">
@@ -546,14 +598,16 @@
                 <!-- Attendance Stats Cards -->
                 <div class="attendance-stats">
                     <div class="stat-card">
-                        <h4><span class="status-badge present" style="min-width: auto; padding: 4px 10px;">✓</span> Present</h4>
+                        <h4><span class="status-badge present" style="min-width: auto; padding: 4px 10px;">✓</span>
+                            Present</h4>
                         <div class="stat-value"></div>
                         <div class="stat-progress">
                             <div class="stat-progress-bar present" style="width: 85%"></div>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <h4><span class="status-badge absent" style="min-width: auto; padding: 4px 10px;">✗</span> Absent</h4>
+                        <h4><span class="status-badge absent" style="min-width: auto; padding: 4px 10px;">✗</span>
+                            Absent</h4>
                         <div class="stat-value"></div>
                         <div class="stat-progress">
                             <div class="stat-progress-bar absent" style="width: 15%"></div>
@@ -587,6 +641,14 @@
                 </div>
             </section>
 
+            <section id="notesSection" class="section hidden">
+                <div class="notes-wrapper">
+                    <h2 class="notes-title">📚 Available Notes</h2>
+                    <div id="notesList" class="notes-grid"></div>
+                </div>
+            </section>
+
+
             <!-- PROFILE -->
             <section id="profile" class="section hidden">
                 <div class="profile-card">
@@ -612,7 +674,39 @@
                     </div>
                 </div>
             </section>
+
+            <!-- LEAVE REQUEST -->
+            <section id="leaveReqSection" class="section hidden">
+                <h2 style="margin-bottom: 1.5rem; color: #1e1a3a">Leave Request</h2>
+
+                <div class="leave-form">
+                    <input type="date" id="fromDate" required /><br /><br />
+                    <input type="date" id="toDate" required /><br /><br />
+                    <textarea id="reason" placeholder="Enter reason" required></textarea>
+                    <br /><br />
+                    <button onclick="submitLeave()">Submit</button>
+                </div>
+
+                <h3 style="margin-top: 30px">Your Leave Requests</h3>
+
+                <div class="table-wrapper">
+                    <table id="leaveTable">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
         </div>
+    </div>
+
+    </div>
     </div>
 
     <!-- YOUR EXACT JS (unchanged) -->

@@ -33,7 +33,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
             document.getElementById("message").style.color = "green";
             // Redirect after 2 seconds
             setTimeout(() => {
-                window.location.href = "public/login.html"; // your login page
+                window.location.href = "login.html"; // your login page
             }, 2000);
         } else {
             // Show error message from backend

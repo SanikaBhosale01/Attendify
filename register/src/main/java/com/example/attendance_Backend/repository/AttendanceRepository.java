@@ -1,20 +1,20 @@
 package com.example.attendance_Backend.repository;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.example.attendance_Backend.dto.AttendanceDTO;
 import com.example.attendance_Backend.dto.DateAnalyticsDTO;
 import com.example.attendance_Backend.dto.StudentAttendanceDTO;
 import com.example.attendance_Backend.dto.SubjectAnalyticsDTO;
 import com.example.attendance_Backend.model.Attendance;
-import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
-
-
 
     @Query("SELECT COUNT(a) FROM Attendance a WHERE a.user.id = :id")
     int totalClasses(@Param("id") int userId);
@@ -50,7 +50,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             String subject
     );
 
-
     // 🔒 NEW — block same device
     boolean existsByDeviceIdAndDateAndSubject(
             String deviceId,
@@ -64,21 +63,21 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     );
 
     @Query("""
-        SELECT new com.example.attendance_Backend.dto.AttendanceDTO(
-            a.date,
-            a.subject,
-            u.rollNo,
-            u.name,
-            a.status
-        )
-        FROM Attendance a
-        JOIN a.user u
-        WHERE a.subject = :subject
-    """)
-    List<AttendanceDTO> attendanceListForTeacher(
-            @Param("subject") String subject
-    );
-
+    SELECT new com.example.attendance_Backend.dto.AttendanceDTO(
+        a.date,
+        a.subject,
+        u.rollNo,
+        u.name,
+        a.status
+    )
+    FROM Attendance a
+    JOIN a.user u
+    WHERE a.subject = :subject
+    ORDER BY a.date DESC
+""")
+List<AttendanceDTO> attendanceListForTeacher(
+        @Param("subject") String subject
+);
 
     @Query("""
 SELECT new com.example.attendance_Backend.dto.StudentAttendanceDTO(
@@ -103,8 +102,6 @@ ORDER BY u.rollNo
     AND a.date = CURRENT_DATE
 """)
     Optional<Attendance> findByRollNo(@Param("rollNo") String rollNo);
-
-
 
     @Query("""
     SELECT new com.example.attendance_Backend.dto.AttendanceDTO(
@@ -159,22 +156,28 @@ ORDER BY u.rollNo
 """)
     List<DateAnalyticsDTO> getDateAnalytics();
 
-
-
     @Query("SELECT COUNT(a) FROM Attendance a WHERE LOWER(a.status) = 'present' AND a.date = :today")
     int countPresentByDate(LocalDate today);
-
-
-
 
     @Query("SELECT COUNT(a) FROM Attendance a WHERE a.date = :today")
     int countTotalByDate(LocalDate today);
 
+    int countByUserId(int userId);
+
+    int countByUserIdAndStatus(int userId, String status);
 
 
-        int countByUserId(int userId);
+    
+boolean existsByUserAndSubjectAndDate(
+        com.example.attendance_Backend.model.User user,
+        String subject,
+        LocalDate date
+);
 
-        int countByUserIdAndStatus(int userId, String status);
-    }
+
+
+
+
+}
 
 

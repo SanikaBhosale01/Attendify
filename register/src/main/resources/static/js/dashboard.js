@@ -187,3 +187,111 @@ function showAttendanceNotification(message) {
 document.addEventListener("DOMContentLoaded", function () {
     checkAttendanceStatus();
 });
+
+const notesList = document.getElementById("notesList");
+
+fetch("http://localhost:8080/api/notes/all")
+    .then(res => res.json())
+    .then(data => {
+
+        notesList.innerHTML = "";
+
+        data.forEach(note => {
+
+            const noteCard = `
+                <div class="note-card">
+                    <div>
+                        <div class="note-title">${note.fileName}</div>
+                        <div class="note-subject">Subject: ${note.subject}</div>
+                    </div>
+                    <a href="http://localhost:8080/${note.filePath}" 
+                       target="_blank" 
+                       class="note-btn">
+                       📥 Download
+                    </a>
+                </div>
+            `;
+
+            notesList.innerHTML += noteCard;
+        });
+    });
+
+    // ================== LEAVE SYSTEM ==================
+
+function submitLeave() {
+
+  if (!user || !user.id) {
+    alert("Session expired. Please login again.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const leaveData = {
+    studentId: user.id,              // ✅ directly from loggedUser
+    studentName: user.name,          // ✅ important for teacher table
+    className: user.className,       // ✅ important for teacher table
+    fromDate: document.getElementById("fromDate").value,
+    toDate: document.getElementById("toDate").value,
+    reason: document.getElementById("reason").value
+  };
+
+  if (!leaveData.fromDate || !leaveData.toDate || !leaveData.reason) {
+    alert("All fields are required!");
+    return;
+  }
+
+  fetch("http://localhost:8080/api/leave/submit", {   // ✅ corrected (no 'leaves')
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(leaveData)
+  })
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+    //   loadStudentLeaves();
+    })
+    .catch(err => console.error("Submit error:", err));
+}
+
+
+function loadStudentLeaves() {
+
+  if (!user || !user.id) {
+    console.error("User not found");
+    return;
+  }
+
+  fetch(`http://localhost:8080/api/leave/student/${user.id}`)  // ✅ use user.id
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch leave data");
+      return res.json();
+    })
+    .then(data => {
+
+      const tbody = document.querySelector("#leaveTable tbody");
+      tbody.innerHTML = "";
+
+      if (!Array.isArray(data) || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">No Leave Requests</td></tr>`;
+        return;
+      }
+
+      data.forEach(leave => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${leave.fromDate}</td>
+            <td>${leave.toDate}</td>
+            <td>${leave.reason}</td>
+            <td>${leave.status}</td>
+          </tr>
+        `;
+      });
+
+    })
+    .catch(err => console.error("Student load error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    checkAttendanceStatus();
+    loadStudentLeaves();   // ✅ ADD THIS LINE
+});

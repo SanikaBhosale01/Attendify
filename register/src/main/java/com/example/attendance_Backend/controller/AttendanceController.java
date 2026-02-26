@@ -222,4 +222,46 @@ public class AttendanceController {
     public String checkAttendance(@PathVariable int id) {
         return attendanceService.checkAttendanceAndNotify(id);
     }
+
+    @PostMapping("/manual")
+    public Map<String, String> markManualAttendance(
+            @RequestParam String rollNo,
+            @RequestParam String subject,
+            @RequestParam String status
+    ) {
+
+        Map<String, String> response = new HashMap<>();
+
+        Optional<User> studentOptional = userRepository.findByRollNo(rollNo);
+
+        if (studentOptional.isEmpty()) {
+            response.put("message", "Student not found ❌");
+            return response;
+        }
+
+        User student = studentOptional.get();
+        LocalDate today = LocalDate.now();
+
+        // Check if already marked
+        boolean alreadyMarked
+                = attendanceRepository.existsByUserAndSubjectAndDate(
+                        student, subject, today);
+
+        if (alreadyMarked) {
+            response.put("message", "Attendance already marked for today ❌");
+            return response;
+        }
+
+        Attendance attendance = new Attendance();
+        attendance.setUser(student);
+        attendance.setSubject(subject);
+        attendance.setDate(today);
+        attendance.setStatus(status); // Present or Absent
+        attendance.setDeviceId("MANUAL"); // mark as manual entry
+
+        attendanceRepository.save(attendance);
+
+        response.put("message", "Manual attendance saved successfully ✅");
+        return response;
+    }
 }

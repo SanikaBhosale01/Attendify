@@ -1,9 +1,16 @@
 package com.example.attendance_Backend.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.attendance_Backend.model.Teacher;
 import com.example.attendance_Backend.service.TeacherService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/teachers")
@@ -69,4 +76,6 @@ public class TeacherController {
         public boolean isSuccess() { return success; }
         public String getMessage() { return message; }
     }
+
+    
 }

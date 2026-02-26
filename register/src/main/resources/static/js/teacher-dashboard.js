@@ -3,6 +3,11 @@ const navLinks = document.querySelectorAll('.nav-link');
 const tabContents = document.querySelectorAll('.tab-content');
 const pageTitle = document.getElementById('pageTitle');
 let attendanceChart=null;
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupUploadNotes();
+    loadUploadedNotes();
+});
 // Initialize the dashboard
 document.addEventListener('DOMContentLoaded', function () {
     // Check authentication
@@ -49,6 +54,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set active nav link
     setActiveNavLink('dashboard');
+
+     loadTeacherSubjectsForNotes(); 
 });
 
 // Get initials for avatar
@@ -610,7 +617,7 @@ function setupStudentsTab() {
             this.classList.add('active');
         });
     });
-
+    
     const addStudentBtn = document.getElementById('addStudentBtn');
     if (addStudentBtn) {
         addStudentBtn.addEventListener('click', function (e) {
@@ -633,7 +640,19 @@ function setupStudentsTab() {
             e.preventDefault();
             saveManualAttendance();
         });
+
+        loadTeacherSubjectsInStudentTab();
     }
+
+
+    // Load Students Button Click
+const loadBtn = document.querySelector("#students-tab .btn.btn-primary");
+
+if (loadBtn) {
+    loadBtn.addEventListener("click", function () {
+        loadStudentsForSelectedClass();
+    });
+}
 }
 
 // Setup Teacher Profile
@@ -802,6 +821,9 @@ function showSettingsSection(settingsType) {
     if (selectedSection) {
         selectedSection.classList.add('active');
     }
+     if (settingsType === "leave") {
+        loadAllLeaves();
+    }
 }
 
 function loadDashboardContent() {
@@ -887,6 +909,58 @@ if (classSelect) {
     classSelect.addEventListener('change', loadStudentsForSelectedClass);
 }
 
+
+function loadTeacherSubjectsInStudentTab() {
+
+    const teacherName = document.getElementById('headerName')?.textContent.trim();
+
+    if (!teacherName) {
+        console.error("Teacher name not found");
+        return;
+    }
+
+    fetch(`http://localhost:8080/api/classes/teacher/${teacherName}`)
+        .then(res => res.json())
+        .then(classes => {
+
+            const subjectDropdown = document.getElementById("filterSubject");
+            const classDropdown = document.getElementById("filterClass");
+
+            if (!subjectDropdown || !classDropdown) return;
+
+            subjectDropdown.innerHTML = `<option value="">All Subjects</option>`;
+            classDropdown.innerHTML = `<option value="">All Classes</option>`;
+
+            const uniqueSubjects = new Set();
+            const uniqueClasses = new Set();
+
+            classes.forEach(cls => {
+                uniqueSubjects.add(cls.subject);
+                uniqueClasses.add(cls.className);
+            });
+
+            uniqueSubjects.forEach(sub => {
+                subjectDropdown.innerHTML +=
+                    `<option value="${sub}">${sub}</option>`;
+            });
+
+            uniqueClasses.forEach(cls => {
+                classDropdown.innerHTML +=
+                    `<option value="${cls}">${cls}</option>`;
+            });
+
+        })
+        .catch(err => {
+            console.error("Error loading teacher subjects:", err);
+        });
+}
+
+
+
+
+
+
+
 function loadStudentsContent() {
 
     fetch("http://localhost:8080/api/attendance/teacher/student-list")
@@ -920,6 +994,72 @@ function loadStudentsContent() {
         })
         .catch(err => {
             console.error("Error loading students:", err);
+        });
+}
+
+
+function loadStudentsForSelectedClass() {
+
+    const selectedClass = document.getElementById("filterClass")?.value;
+    const selectedSubject = document.getElementById("filterSubject")?.value;
+
+    let url = "http://localhost:8080/api/attendance/teacher/student-list";
+
+    const params = new URLSearchParams();
+
+    if (selectedClass) {
+        params.append("className", selectedClass);
+    }
+
+    if (selectedSubject) {
+        params.append("subject", selectedSubject);
+    }
+
+    if (params.toString()) {
+        url += "?" + params.toString();
+    }
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+
+            data.sort((a, b) => parseInt(a.rollNo) - parseInt(b.rollNo));
+
+            const tbody = document.getElementById("studentTableBody");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;">
+                            No students found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.rollNo}</td>
+                        <td>${s.name}</td>
+                        <td>${s.className}</td>
+                        <td>${s.subject}</td>
+                        <td>${s.status || "-"}</td>
+                        <td class="action-icons">
+                            <i class="fas fa-eye view-icon" onclick="viewStudent('${s.rollNo}')"></i>
+                            <i class="fas fa-pen edit-icon" onclick="editStudent('${s.rollNo}')"></i>
+                            <i class="fas fa-trash delete-icon" onclick="deleteStudent(${s.id})"></i>
+                        </td>
+                    </tr>
+                `;
+            });
+
+        })
+        .catch(err => {
+            console.error("Filter error:", err);
+            alert("Error loading students");
         });
 }
 
@@ -1120,21 +1260,36 @@ const data = {
 
 // Save manual attendance
 function saveManualAttendance() {
-    const studentId = document.getElementById('manualStudentId').value;
-    const studentClass = document.getElementById('manualClassSelect').value;
-    const division = document.getElementById('manualDivisionSelect').value;
-    const status = document.getElementById('attendanceStatusSelect').value;
-    const remarks = document.getElementById('attendanceRemarks').value;
 
-    if (!studentId || !studentClass || !division) {
-        alert('Please fill all required fields');
+    const rollNo = document.getElementById('manualStudentId').value;
+    const subject = document.getElementById('manualSubjectSelect').value;
+    const status = document.getElementById('attendanceStatusSelect').value;
+
+    if (!rollNo || !subject || !status) {
+        alert("Please fill all required fields");
         return;
     }
 
-    alert(`Attendance marked successfully for Student ID: ${studentId}`);
-    document.getElementById('manualAttendanceForm').reset();
-}
+    const params = new URLSearchParams({
+        rollNo: rollNo,
+        subject: subject,
+        status: status
+    });
 
+    fetch("http://localhost:8080/api/attendance/manual?" + params.toString(), {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        document.getElementById('manualAttendanceForm').reset();
+        loadStudentsContent();
+    })
+    .catch(err => {
+        console.error("Manual attendance error:", err);
+        alert("❌ Error saving attendance");
+    });
+}
 // Open edit profile modal
 function openEditProfileModal() {
     const modal = document.getElementById('editTeacherProfileModal');
@@ -1453,9 +1608,216 @@ function finalizeAttendance() {
 }
 
 
+// Upload Notes
+// ==============================
+// Upload Notes Function (FINAL)
+// ==============================
+
+
+
+function loadTeacherSubjectsForNotes() {
+
+    const teacherName = document.getElementById('headerName')?.textContent.trim();
+
+    if (!teacherName) {
+        console.error("Teacher name not found");
+        return;
+    }
+
+    fetch(`http://localhost:8080/api/classes/teacher/${teacherName}`)
+        .then(res => res.json())
+        .then(classes => {
+
+            const subjectDropdown = document.getElementById("notesSubject");
+            if (!subjectDropdown) return;
+
+            subjectDropdown.innerHTML = `<option value="">Select Subject</option>`;
+
+            const uniqueSubjects = new Set();
+
+            classes.forEach(cls => {
+                uniqueSubjects.add(cls.subject);
+            });
+
+            uniqueSubjects.forEach(sub => {
+                subjectDropdown.innerHTML +=
+                    `<option value="${sub}">${sub}</option>`;
+            });
+
+        })
+        .catch(err => {
+            console.error("Error loading note subjects:", err);
+        });
+}
+
+function setupUploadNotes() {
+
+    
+    const form = document.getElementById("uploadNotesForm");
+
+    if (!form) {
+        console.error("Upload Notes form not found!");
+        return;
+    }
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const subjectElement = document.getElementById("notesSubject");
+        const fileElement = document.getElementById("notesFile");
+
+        if (!subjectElement || !fileElement) {
+            alert("Form elements not found");
+            return;
+        }
+
+        const subject = subjectElement.value.trim();
+        const file = fileElement.files[0];
+
+        if (!subject) {
+            alert("Please select subject");
+            return;
+        }
+
+        if (!file) {
+            alert("Please choose a file to upload");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append("subject", subject);
+            formData.append("file", file);
+
+            const res = await fetch("http://localhost:8080/api/notes/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!res.ok) throw new Error("Upload failed with status " + res.status);
+
+            const message = await res.text();
+            alert("✅ " + message);
+
+            form.reset();
+
+            // 🔹 Refresh the uploaded notes table
+            loadUploadedNotes();
+
+        } catch (error) {
+            console.error("Upload Error:", error);
+            alert("❌ Upload failed. Please try again.");
+        }
+    });
+}
+async function loadUploadedNotes() {
+    try {
+        const res = await fetch("http://localhost:8080/api/notes/all");
+        if (!res.ok) throw new Error("Failed to fetch notes");
+
+        const notes = await res.json();
+        const tbody = document.getElementById("uploadedNotesTableBody");
+        tbody.innerHTML = "";
+
+        if (notes.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No notes uploaded yet.</td></tr>`;
+            return;
+        }
+        notes.forEach(note => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${note.subject}</td>
+                    <td>${note.fileName}</td>
+                    <td>${new Date(note.uploadtime).toLocaleString()}</td>
+                    <td>
+                        <a href="${note.fileUrl}" target="_blank" class="btn btn-sm btn-success">View</a>
+                        <button onclick="deleteNote('${note.id}')" class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert("Error loading uploaded notes");
+    }
+}
 // Export functions for onclick attributes
 window.logout = logout;
 window.generateReport = generateReport;
 window.editClass = editClass;
 window.deleteClass = deleteClass;
 window.generateQRForClass = generateQRForClass;
+
+// ================= SETTINGS NAVIGATION =================
+
+
+function loadAllLeaves() {
+
+  fetch("http://localhost:8080/api/leave/all")
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch leaves");
+      return res.json();
+    })
+    .then(data => {
+
+      const tbody = document.querySelector("#leaveTable tbody");
+      tbody.innerHTML = "";
+
+      if (!Array.isArray(data) || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7">No Leave Requests</td></tr>`;
+        return;
+      }
+
+      data.forEach(leave => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${leave.studentName}</td>
+          <td>${leave.className}</td>
+          <td>${leave.fromDate}</td>
+          <td>${leave.toDate}</td>
+          <td>${leave.reason}</td>
+          <td>${leave.status}</td>
+          <td>
+            ${
+              leave.status === "Pending"
+                ? `
+                  <button onclick="approveLeave(${leave.id})">Approve</button>
+                  <button onclick="rejectLeave(${leave.id})">Reject</button>
+                `
+                : "-"
+            }
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+
+    })
+    .catch(err => console.error("Teacher load error:", err));
+}
+
+function approveLeave(id) {
+  fetch(`http://localhost:8080/api/leave/approve/${id}`, {
+    method: "PUT"
+  })
+    .then(res => res.text())
+    .then(message => {
+      alert(message);
+      loadAllLeaves(); // Refresh table
+    })
+    .catch(error => console.error("Approve error:", error));
+}
+
+function rejectLeave(id) {
+  fetch(`http://localhost:8080/api/leave/reject/${id}`, {
+    method: "PUT"
+  })
+    .then(res => res.text())
+    .then(message => {
+      alert(message);
+      loadAllLeaves(); // Refresh table
+    })
+    .catch(error => console.error("Reject error:", error));
+}
