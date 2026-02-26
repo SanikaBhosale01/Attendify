@@ -1,10 +1,7 @@
 // ================= BASE CONFIG =================
 
 // Change this when using ngrok
-const API_BASE = "https://kia-unogled-lionheartedly.ngrok-free.dev";  
-
-// If using ngrok, replace above line with:
-// const API_BASE = "https://abcd.ngrok-free.dev";
+const API_BASE = "https://kia-unogled-lionheartedly.ngrok-free.dev";
 
 let currentQRLink = "";
 let countdownInterval = null;
@@ -62,10 +59,9 @@ const langData = {
     Remarks: "Remarks",
     "Save Attendance": "Save Attendance",
     Clear: "Clear",
+    "Attendance Setting": "Attendance Setting",
     "System Settings": "System Settings",
-    "Attendance Settings": "Attendance Settings",
-    "QR Settings": "QR Settings",
-    Notifications: "Notifications",
+    "View Leave Requests": "View Leave Requests",
     Security: "Security",
     "Generate Report": "Generate Report",
     "View Report": "View Report",
@@ -86,13 +82,14 @@ const langData = {
     "View Student": "View Student",
     "Edit Student": "Edit Student",
     "Delete Student": "Delete Student",
-    "Are you sure you want to delete this student?": "Are you sure you want to delete this student?",
+    "Are you sure you want to delete this student?":
+      "Are you sure you want to delete this student?",
     "Student deleted successfully": "Student deleted successfully",
     "Failed to delete student": "Failed to delete student",
     "Student updated successfully": "Student updated successfully",
     "Student added successfully": "Student added successfully",
     "Update Student": "Update Student",
-    "Add Student": "Add Student"
+    "Add Student": "Add Student",
   },
   hi: {
     Dashboard: "डैशबोर्ड",
@@ -146,8 +143,7 @@ const langData = {
     Clear: "साफ़ करें",
     "System Settings": "सिस्टम सेटिंग्स",
     "Attendance Settings": "उपस्थिति सेटिंग्स",
-    "QR Settings": "क्यूआर सेटिंग्स",
-    Notifications: "सूचनाएं",
+    "View Leave Requests": "अवकाश अनुरोध देखें",
     Security: "सुरक्षा",
     "Generate Report": "रिपोर्ट बनाएं",
     "View Report": "रिपोर्ट देखें",
@@ -168,13 +164,14 @@ const langData = {
     "View Student": "छात्र देखें",
     "Edit Student": "छात्र संपादित करें",
     "Delete Student": "छात्र हटाएँ",
-    "Are you sure you want to delete this student?": "क्या आप इस छात्र को हटाना चाहते हैं?",
+    "Are you sure you want to delete this student?":
+      "क्या आप इस छात्र को हटाना चाहते हैं?",
     "Student deleted successfully": "छात्र सफलतापूर्वक हटा दिया गया",
     "Failed to delete student": "छात्र हटाने में विफल",
     "Student updated successfully": "छात्र सफलतापूर्वक अपडेट किया गया",
     "Student added successfully": "छात्र सफलतापूर्वक जोड़ा गया",
     "Update Student": "छात्र अपडेट करें",
-    "Add Student": "छात्र जोड़ें"
+    "Add Student": "छात्र जोड़ें",
   },
   mr: {
     Dashboard: "डॅशबोर्ड",
@@ -228,7 +225,7 @@ const langData = {
     Clear: "साफ करा",
     "System Settings": "सिस्टम सेटिंग्ज",
     "Attendance Settings": "उपस्थिती सेटिंग्ज",
-    "QR Settings": "क्यूआर सेटिंग्ज",
+    "View Leave Requests": "रजा विनंती पहा",
     Notifications: "सूचना",
     Security: "सुरक्षा",
     "Generate Report": "अहवाल तयार करा",
@@ -243,20 +240,22 @@ const langData = {
     Edit: "संपादित करा",
     Delete: "काढा",
     "Mark Attendance": "उपस्थिती नोंदवा",
-    "No students found": "निवडलेल्या निकषांनुसार कोणतेही विद्यार्थी सापडले नाहीत",
+    "No students found":
+      "निवडलेल्या निकषांनुसार कोणतेही विद्यार्थी सापडले नाहीत",
     "Failed to load student list": "विद्यार्थी यादी लोड करण्यात अयशस्वी",
     "Please select at least one filter": "कृपया किमान एक फिल्टर निवडा",
     "Loading students": "डेटाबेसमधून विद्यार्थी लोड होत आहेत...",
     "View Student": "विद्यार्थी पहा",
     "Edit Student": "विद्यार्थी संपादित करा",
     "Delete Student": "विद्यार्थी काढा",
-    "Are you sure you want to delete this student?": "तुम्हाला हा विद्यार्थी काढायचा आहे का?",
+    "Are you sure you want to delete this student?":
+      "तुम्हाला हा विद्यार्थी काढायचा आहे का?",
     "Student deleted successfully": "विद्यार्थी यशस्वीरित्या काढला गेला",
     "Failed to delete student": "विद्यार्थी काढण्यात अयशस्वी",
     "Student updated successfully": "विद्यार्थी यशस्वीरित्या अपडेट केला",
     "Student added successfully": "विद्यार्थी यशस्वीरित्या जोडला गेला",
     "Update Student": "विद्यार्थी अपडेट करा",
-    "Add Student": "विद्यार्थी जोडा"
+    "Add Student": "विद्यार्थी जोडा",
   },
 };
 
@@ -277,6 +276,11 @@ function storeEnglishText() {
         el.setAttribute("data-english", text);
       }
     }
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    setupUploadNotes();
+    loadUploadedNotes();
   });
 
   // Store placeholders
@@ -377,16 +381,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.setLanguage(currentLang);
   }, 50);
 });
-
-// Also run after dynamic content
-const originalLoadStudents = window.loadStudentsForSelectedClass;
-window.loadStudentsForSelectedClass = function () {
-  if (originalLoadStudents) originalLoadStudents.apply(this, arguments);
-  setTimeout(function () {
-    storeEnglishText();
-    translatePage(currentLang);
-  }, 100);
-};
 // =============== END OF LANGUAGE SYSTEM ===============
 
 // DOM Elements
@@ -530,6 +524,8 @@ function setupEventListeners() {
   // Reports
   setupReportsTab();
 
+  loadTeacherSubjectsForNotes();
+
   // Settings
   setupSettingsTab();
 }
@@ -589,7 +585,7 @@ function loadTabContent(tabName) {
       loadClassesContent();
       break;
     case "students":
-      // loadStudentsContent() - removed as per requirements
+      loadStudentsContent();
       break;
     case "teacher-profile":
       loadTeacherProfileContent();
@@ -606,143 +602,143 @@ function loadTabContent(tabName) {
 // =============== QR GENERATOR WITH NGROK INTEGRATION ===============
 // Setup QR Generator functionality
 function setupQRGenerator() {
-    const generateQRBtn = document.getElementById('generateQRBtn');
-    const qrDisplay = document.getElementById('qrDisplay');
+  const generateQRBtn = document.getElementById("generateQRBtn");
+  const qrDisplay = document.getElementById("qrDisplay");
 
-    if (generateQRBtn) {
-        generateQRBtn.addEventListener('click', function () {
-            const classSelect = document.getElementById('classSelect');
-            const divisionSelect = document.getElementById('divisionSelect');
-            const durationSelect = document.getElementById('durationSelect');
+  if (generateQRBtn) {
+    generateQRBtn.addEventListener("click", function () {
+      const classSelect = document.getElementById("classSelect");
+      const divisionSelect = document.getElementById("divisionSelect");
+      const durationSelect = document.getElementById("durationSelect");
 
-            const selectedClass = classSelect.value;
-            const selectedDivision = divisionSelect.value;
-            const duration = parseInt(durationSelect.value);
+      const selectedClass = classSelect.value;
+      const selectedDivision = divisionSelect.value;
+      const duration = parseInt(durationSelect.value);
 
-            if (!selectedClass || !selectedDivision) {
-                alert('Please select both class and division');
-                return;
-            }
+      if (!selectedClass || !selectedDivision) {
+        alert("Please select both class and division");
+        return;
+      }
 
-            // Show QR display
-            if (qrDisplay) {
-                qrDisplay.style.display = 'flex';
+      // Show QR display
+      if (qrDisplay) {
+        qrDisplay.style.display = "flex";
 
-                // Update QR info
-                const classText = classSelect.options[classSelect.selectedIndex].text;
-                document.getElementById('qrClassInfo').textContent = `${classText} - Division ${selectedDivision}`;
+        // Update QR info
+        const classText = classSelect.options[classSelect.selectedIndex].text;
+        document.getElementById("qrClassInfo").textContent =
+          `${classText} - Division ${selectedDivision}`;
 
-                // Update teacher name
-                const teacherName = document.getElementById('headerName').textContent;
-                document.getElementById('qrTeacherName').textContent = teacherName;
+        // Update teacher name
+        const teacherName = document.getElementById("headerName").textContent;
+        document.getElementById("qrTeacherName").textContent = teacherName;
 
-                // Update timestamp
-                const now = new Date();
-                document.getElementById('qrTimestamp').textContent =
-                    `Today, ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+        // Update timestamp
+        const now = new Date();
+        document.getElementById("qrTimestamp").textContent =
+          `Today, ${now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
 
-                // Update timer text
-                document.getElementById('qrTimerText').textContent = `${duration} minutes`;
+        // Update timer text
+        document.getElementById("qrTimerText").textContent =
+          `${duration} minutes`;
 
-                // Generate QR code
-                generateQRCode(selectedClass, selectedDivision, duration);
-            }
-        });
-    }
+        // Generate QR code
+        generateQRCode(selectedClass, selectedDivision, duration);
+      }
+    });
+  }
 }
 
-// Generate QR code with 
+// Generate QR code with
 function generateQRCode(className, division, duration) {
+  const qrImage = document.getElementById("qrImage");
+  const qrTimer = document.getElementById("qrTimer");
+  const teacherName = document.getElementById("headerName").textContent.trim();
+  const timestamp = Date.now();
 
-    const qrImage = document.getElementById('qrImage');
-    const qrTimer = document.getElementById('qrTimer');
-    const teacherName = document.getElementById('headerName').textContent.trim();
-    const timestamp = Date.now();
+  // Automatically detect domain (localhost OR ngrok)
+  const baseUrl = window.location.origin;
 
-    // Automatically detect domain (localhost OR ngrok)
-    const baseUrl = window.location.origin;
+  // Build actual attendance URL
+  currentQRLink =
+    `${API_BASE}/student-attendance.html` +
+    `?class=${encodeURIComponent(className)}` +
+    `&division=${encodeURIComponent(division)}` +
+    `&teacher=${encodeURIComponent(teacherName)}` +
+    `&ts=${timestamp}`;
 
-    // Build actual attendance URL
-    currentQRLink =
-        `${API_BASE}/student-attendance.html` +
-        `?class=${encodeURIComponent(className)}` +
-        `&division=${encodeURIComponent(division)}` +
-        `&teacher=${encodeURIComponent(teacherName)}` +
-        `&ts=${timestamp}`;
+  // Generate QR image
+  qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentQRLink)}`;
 
-    // Generate QR image
-    qrImage.src =
-        `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(currentQRLink)}`;
+  // Clear old timer
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
 
-    // Clear old timer
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
-    }
+  startCountdown(duration * 60, qrTimer);
 
-    startCountdown(duration * 60, qrTimer);
-
-    addShareButtons();
+  addShareButtons();
 }
-
 
 // Start countdown timer
 function startCountdown(seconds, timerElement) {
-    let timeLeft = seconds;
+  let timeLeft = seconds;
 
-    // Clear any existing timer
-    if (window.qrTimerInterval) {
-        clearInterval(window.qrTimerInterval);
+  // Clear any existing timer
+  if (window.qrTimerInterval) {
+    clearInterval(window.qrTimerInterval);
+  }
+
+  window.qrTimerInterval = setInterval(() => {
+    if (timeLeft <= 0) {
+      clearInterval(window.qrTimerInterval);
+      timerElement.textContent = "00:00";
+
+      // Show expired message
+      const qrDisplay = document.getElementById("qrDisplay");
+      if (qrDisplay) {
+        // Remove existing expired message if any
+        const existingMsg = qrDisplay.querySelector(".expired-message");
+        if (existingMsg) existingMsg.remove();
+
+        const expiredMsg = document.createElement("div");
+        expiredMsg.className = "expired-message";
+        expiredMsg.innerHTML =
+          '<i class="fas fa-exclamation-circle"></i> QR Code has expired!';
+        qrDisplay.appendChild(expiredMsg);
+      }
+
+      return;
     }
 
-    window.qrTimerInterval = setInterval(() => {
-        if (timeLeft <= 0) {
-            clearInterval(window.qrTimerInterval);
-            timerElement.textContent = '00:00';
-
-            // Show expired message
-            const qrDisplay = document.getElementById('qrDisplay');
-            if (qrDisplay) {
-                // Remove existing expired message if any
-                const existingMsg = qrDisplay.querySelector('.expired-message');
-                if (existingMsg) existingMsg.remove();
-                
-                const expiredMsg = document.createElement('div');
-                expiredMsg.className = 'expired-message';
-                expiredMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> QR Code has expired!';
-                qrDisplay.appendChild(expiredMsg);
-            }
-
-            return;
-        }
-
-        const minutes = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        timeLeft--;
-    }, 1000);
+    const minutes = Math.floor(timeLeft / 60);
+    const secs = timeLeft % 60;
+    timerElement.textContent = `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    timeLeft--;
+  }, 1000);
 }
 
 // Add share buttons
 function addShareButtons() {
-    const qrDisplay = document.getElementById('qrDisplay');
-    if (!qrDisplay) return;
+  const qrDisplay = document.getElementById("qrDisplay");
+  if (!qrDisplay) return;
 
-    // Remove existing share buttons
-    const existingShare = qrDisplay.querySelector('.share-buttons');
-    if (existingShare) {
-        existingShare.remove();
-    }
+  // Remove existing share buttons
+  const existingShare = qrDisplay.querySelector(".share-buttons");
+  if (existingShare) {
+    existingShare.remove();
+  }
 
-    // Remove existing expired message if any
-    const existingMsg = qrDisplay.querySelector('.expired-message');
-    if (existingMsg) {
-        existingMsg.remove();
-    }
+  // Remove existing expired message if any
+  const existingMsg = qrDisplay.querySelector(".expired-message");
+  if (existingMsg) {
+    existingMsg.remove();
+  }
 
-    // Create share buttons container
-    const shareButtons = document.createElement('div');
-    shareButtons.className = 'share-buttons';
-    shareButtons.innerHTML = `
+  // Create share buttons container
+  const shareButtons = document.createElement("div");
+  shareButtons.className = "share-buttons";
+  shareButtons.innerHTML = `
         <h4>Share QR Code:</h4>
         <div class="share-options">
             <button class="btn btn-whatsapp" id="shareWhatsAppBtn">
@@ -757,79 +753,123 @@ function addShareButtons() {
         </div>
     `;
 
-    qrDisplay.appendChild(shareButtons);
+  qrDisplay.appendChild(shareButtons);
 
-    // Add event listeners to share buttons
-    document.getElementById('shareWhatsAppBtn')?.addEventListener('click', shareToWhatsApp);
-    document.getElementById('downloadQRBtn')?.addEventListener('click', downloadQRCode);
-    document.getElementById('copyQRBtn')?.addEventListener('click', copyQRCode);
+  // Add event listeners to share buttons
+  document
+    .getElementById("shareWhatsAppBtn")
+    ?.addEventListener("click", shareToWhatsApp);
+  document
+    .getElementById("downloadQRBtn")
+    ?.addEventListener("click", downloadQRCode);
+  document.getElementById("copyQRBtn")?.addEventListener("click", copyQRCode);
 }
 
 // Share to WhatsApp
 function shareToWhatsApp() {
+  const classInfo = document.getElementById("qrClassInfo").textContent;
+  const teacherName = document.getElementById("qrTeacherName").textContent;
+  const duration = document.getElementById("qrTimerText").textContent;
 
-    const classInfo = document.getElementById('qrClassInfo').textContent;
-    const teacherName = document.getElementById('qrTeacherName').textContent;
-    const duration = document.getElementById('qrTimerText').textContent;
+  const message =
+    `📱 Attendance QR Code\n\n` +
+    `📚 ${classInfo}\n` +
+    `👨‍🏫 Teacher: ${teacherName}\n\n` +
+    `🔗 Open Attendance Link:\n${currentQRLink}\n\n` +
+    `⏰ Valid for: ${duration}`;
 
-    const message =
-        `📱 Attendance QR Code\n\n` +
-        `📚 ${classInfo}\n` +
-        `👨‍🏫 Teacher: ${teacherName}\n\n` +
-        `🔗 Open Attendance Link:\n${currentQRLink}\n\n` +
-        `⏰ Valid for: ${duration}`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
 
-    const whatsappUrl =
-        `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappUrl, '_blank');
+  window.open(whatsappUrl, "_blank");
 }
 
 // Download QR code
 function downloadQRCode() {
-    const qrImage = document.getElementById('qrImage');
-    const classInfo = document.getElementById('qrClassInfo').textContent
-        .replace(/[^a-zA-Z0-9]/g, '_');
+  const qrImage = document.getElementById("qrImage");
+  const classInfo = document
+    .getElementById("qrClassInfo")
+    .textContent.replace(/[^a-zA-Z0-9]/g, "_");
 
-    // Create temporary link
-    const link = document.createElement('a');
-    link.href = qrImage.src;
-    link.download = `QR_Attendance_${classInfo}_${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // Create temporary link
+  const link = document.createElement("a");
+  link.href = qrImage.src;
+  link.download = `QR_Attendance_${classInfo}_${Date.now()}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 
-    alert('QR Code downloaded successfully!');
+  alert("QR Code downloaded successfully!");
 }
 
 // Copy QR code URL
 function copyQRCode() {
+  if (!currentQRLink) {
+    alert("QR not generated yet!");
+    return;
+  }
 
-    if (!currentQRLink) {
-        alert("QR not generated yet!");
-        return;
-    }
-
-    navigator.clipboard.writeText(currentQRLink)
-        .then(() => {
-            alert("Attendance link copied successfully!");
-        })
-        .catch(() => {
-            alert("Failed to copy link.");
-        });
+  navigator.clipboard
+    .writeText(currentQRLink)
+    .then(() => {
+      alert("Attendance link copied successfully!");
+    })
+    .catch(() => {
+      alert("Failed to copy link.");
+    });
 }
 // =============== END QR GENERATOR ===============
 
-// Setup Classes Tab
+// ================= INITIALIZE CLASSES TAB =================
+document.addEventListener("DOMContentLoaded", function () {
+  setupClassesTab(); // Important: initialize class tab logic
+
+  // ================= FIX: Auto Load Class List When Sidebar Clicked =================
+  const classesSidebarLink = document.querySelector(
+    '.nav-link[data-tab="classes"]',
+  );
+
+  if (classesSidebarLink) {
+    classesSidebarLink.addEventListener("click", function () {
+      setTimeout(() => {
+        // Activate Class List tab
+        const classTabs = document.querySelectorAll("#classes-tab .tab");
+        classTabs.forEach((t) => t.classList.remove("active"));
+
+        const classListTab = document.querySelector(
+          '#classes-tab .tab[data-subtab="class-list"]',
+        );
+        if (classListTab) classListTab.classList.add("active");
+
+        // Activate Class List content
+        const subContents = document.querySelectorAll(
+          "#classes-tab .tab-content",
+        );
+        subContents.forEach((tc) => tc.classList.remove("active"));
+
+        const classListContent = document.getElementById("class-list-subtab");
+        if (classListContent) classListContent.classList.add("active");
+
+        // Ensure container exists
+        ensureClassesContainer();
+
+        // Load classes immediately
+        if (typeof loadClassesContent === "function") {
+          console.log("Loading classes from sidebar click");
+          loadClassesContent();
+        }
+      }, 100);
+    });
+  }
+});
+
+// ================= SETUP CLASSES TAB =================
 function setupClassesTab() {
-  // Tab switching within classes tab
   const classTabs = document.querySelectorAll("#classes-tab .tab");
 
   classTabs.forEach((tab) => {
     tab.addEventListener("click", function () {
       const subtab = this.getAttribute("data-subtab");
 
-      // Fix: Use the correct subtab ID based on data-subtab
       let subtabId;
       if (subtab === "class-list") {
         subtabId = "class-list-subtab";
@@ -871,6 +911,7 @@ function setupClassesTab() {
     });
   }
 
+  // ================= ADD OR UPDATE CLASS =================
   function addOrUpdateClass() {
     const teacherName = document.getElementById("headerName").textContent;
 
@@ -913,7 +954,6 @@ function setupClassesTab() {
           '#addClassForm button[type="submit"]',
         ).textContent = "Add Class";
 
-        // Load content in both tabs
         loadClassesContent();
         loadDashboardContent();
 
@@ -943,7 +983,7 @@ function setupClassesTab() {
   }
 }
 
-// Show subtab - Modified to handle full ID
+// ================= SHOW SUBTAB =================
 function showSubTab(parentTabId, subtabId) {
   const parentTab = document.getElementById(parentTabId);
   const subtabs = parentTab.querySelectorAll(".tab-content");
@@ -958,112 +998,290 @@ function showSubTab(parentTabId, subtabId) {
   }
 }
 
-// Ensure the class-list subtab has the container
+// ================= ENSURE CLASS CONTAINER =================
 function ensureClassesContainer() {
   const classListSubtab = document.getElementById("class-list-subtab");
+
   if (classListSubtab) {
     if (!document.getElementById("classesContainer")) {
       console.log("Creating classes container in class-list-subtab");
+
       const container = document.createElement("div");
       container.id = "classesContainer";
       container.className = "classes-container";
+
       classListSubtab.appendChild(container);
     }
   }
 }
 
+// ------------------ AUTO TRANSLATION WRAPPER ------------------
+
+// Keep reference if function already exists
+const originalLoadStudentsForSelectedClass =
+  window.loadStudentsForSelectedClass;
+
+window.loadStudentsForSelectedClass = function () {
+  if (originalLoadStudentsForSelectedClass) {
+    originalLoadStudentsForSelectedClass.apply(this, arguments);
+  }
+
+  setTimeout(function () {
+    if (typeof storeEnglishText === "function") storeEnglishText();
+    if (typeof translatePage === "function") translatePage(currentLang);
+  }, 100);
+};
+
+// -------------------View Students list--------------------
+
+document.addEventListener("DOMContentLoaded", function () {
+  // ================= GLOBAL STORAGE =================
+  let allStudents = [];
+
+  // ================= SIDEBAR NAVIGATION =================
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const tabName = this.dataset.tab;
+
+      // Remove active from sidebar
+      document
+        .querySelectorAll(".nav-link")
+        .forEach((l) => l.classList.remove("active"));
+      this.classList.add("active");
+
+      // Hide all main tabs
+      document.querySelectorAll(".tab-content").forEach((tab) => {
+        tab.classList.remove("active");
+      });
+
+      // Show selected main tab
+      const mainTab = document.getElementById(tabName + "-tab");
+      if (mainTab) {
+        mainTab.classList.add("active");
+      }
+
+      // ================= STUDENTS SPECIAL =================
+      if (tabName === "students") {
+        document
+          .querySelectorAll("#students-tab .tab")
+          .forEach((t) => t.classList.remove("active"));
+
+        document
+          .querySelectorAll("#students-tab .tab-content")
+          .forEach((tc) => tc.classList.remove("active"));
+
+        const studentListTab = document.querySelector(
+          '[data-subtab="student-list"]',
+        );
+        const studentListContent = document.getElementById(
+          "student-list-subtab",
+        );
+
+        if (studentListTab) studentListTab.classList.add("active");
+        if (studentListContent) studentListContent.classList.add("active");
+
+        loadStudentsContent();
+      }
+    });
+  });
+
+  // ================= SUBTAB SWITCH =================
+  document.querySelectorAll("#students-tab .tab").forEach((tab) => {
+    tab.addEventListener("click", function () {
+      const subtabName = this.dataset.subtab;
+
+      document
+        .querySelectorAll("#students-tab .tab")
+        .forEach((t) => t.classList.remove("active"));
+      document
+        .querySelectorAll("#students-tab .tab-content")
+        .forEach((tc) => tc.classList.remove("active"));
+
+      this.classList.add("active");
+
+      const subtabContent = document.getElementById(subtabName + "-subtab");
+      if (subtabContent) {
+        subtabContent.classList.add("active");
+      }
+
+      if (subtabName === "student-list") {
+        loadStudentsContent();
+      }
+    });
+  });
+
+  // ================= LOAD STUDENTS =================
+  function loadStudentsContent() {
+    console.log("Loading student list...");
+
+    fetch("http://localhost:8080/api/attendance/teacher/student-list")
+      .then((res) => res.json())
+      .then((data) => {
+        data.sort((a, b) => parseInt(a.rollNo) - parseInt(b.rollNo));
+        allStudents = data;
+
+        renderStudents(allStudents);
+      })
+      .catch((err) => {
+        console.error("Error loading students:", err);
+      });
+  }
+
+  // ================= RENDER TABLE =================
+  function renderStudents(studentList) {
+    const tbody = document.getElementById("studentTableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    if (studentList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No students found</td></tr>`;
+      return;
+    }
+
+    studentList.forEach((s) => {
+      tbody.innerHTML += `
+                <tr>
+                    <td>${s.rollNo}</td>
+                    <td>${s.name}</td>
+                    <td>${s.className}</td>
+                    <td>${s.subject || "-"}</td>
+                    <td>${s.status || "-"}</td>
+                </tr>
+            `;
+    });
+  }
+
+  // ================= SEARCH =================
+  const searchInput = document.getElementById("searchStudent");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      const searchValue = this.value.toLowerCase();
+
+      const filteredStudents = allStudents.filter(
+        (s) =>
+          (s.name && s.name.toLowerCase().includes(searchValue)) ||
+          (s.rollNo && s.rollNo.toLowerCase().includes(searchValue)) ||
+          (s.className && s.className.toLowerCase().includes(searchValue)) ||
+          (s.subject && s.subject.toLowerCase().includes(searchValue)),
+      );
+
+      renderStudents(filteredStudents);
+    });
+  }
+});
+
 // =============== SIMPLIFIED STUDENT TAB SETUP ===============
 function setupStudentsTab() {
-    const studentTabs = document.querySelectorAll('#students-tab .tab');
-    studentTabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            const subtab = this.getAttribute('data-subtab');
-            
-            // Fix: Use the correct subtab ID based on data-subtab
-            let subtabId;
-            if (subtab === "student-list") {
-                subtabId = "student-list-subtab";
-            } else if (subtab === "add-student") {
-                subtabId = "add-student-subtab";
-            } else if (subtab === "manual-attendance") {
-                subtabId = "manual-attendance-subtab";
-            }
+  const studentTabs = document.querySelectorAll("#students-tab .tab");
+  studentTabs.forEach((tab) => {
+    tab.addEventListener("click", function () {
+      const subtab = this.getAttribute("data-subtab");
 
-            if (subtabId) {
-                showSubTab('students-tab', subtabId);
-            }
-            
-            studentTabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-        });
+      // Fix: Use the correct subtab ID based on data-subtab
+      let subtabId;
+      if (subtab === "student-list") {
+        subtabId = "student-list-subtab";
+      } else if (subtab === "add-student") {
+        subtabId = "add-student-subtab";
+      } else if (subtab === "manual-attendance") {
+        subtabId = "manual-attendance-subtab";
+      }
+
+      if (subtabId) {
+        showSubTab("students-tab", subtabId);
+      }
+
+      studentTabs.forEach((t) => t.classList.remove("active"));
+      this.classList.add("active");
     });
+  });
 
-    const addStudentBtn = document.getElementById('addStudentBtn');
-    if (addStudentBtn) {
-        addStudentBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            showSubTab('students-tab', 'add-student-subtab');
-        });
-    }
+  const addStudentBtn = document.getElementById("addStudentBtn");
+  if (addStudentBtn) {
+    addStudentBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      showSubTab("students-tab", "add-student-subtab");
+    });
+  }
 
-    const addStudentForm = document.getElementById('addStudentForm');
-    if (addStudentForm) {
-        addStudentForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            addNewStudent();
-        });
-    }
+  const addStudentForm = document.getElementById("addStudentForm");
+  if (addStudentForm) {
+    addStudentForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      addNewStudent();
+    });
+  }
 
-    const manualAttendanceForm = document.getElementById('manualAttendanceForm');
-    if (manualAttendanceForm) {
-        manualAttendanceForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            saveManualAttendance();
-        });
-    }
+  const manualAttendanceForm = document.getElementById("manualAttendanceForm");
+  if (manualAttendanceForm) {
+    manualAttendanceForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      saveManualAttendance();
+    });
+  }
 }
 
 // Simple add new student function
 function addNewStudent() {
-    const name = document.getElementById('newStudentName').value;
-    const studentId = document.getElementById('newStudentId').value;
-    const studentClass = document.getElementById('newStudentClass').value;
-    const division = document.getElementById('newStudentDivision')?.value || 'A';
-    const email = document.getElementById('newStudentEmail').value;
-    const phone = document.getElementById('newStudentPhone').value;
-    const address = document.getElementById('newStudentAddress')?.value || '';
+  const name = document.getElementById("newStudentName").value;
+  const studentId = document.getElementById("newStudentId").value;
+  const studentClass = document.getElementById("newStudentClass").value;
+  const division = document.getElementById("newStudentDivision")?.value || "A";
+  const email = document.getElementById("newStudentEmail").value;
+  const phone = document.getElementById("newStudentPhone").value;
+  const address = document.getElementById("newStudentAddress")?.value || "";
 
-    if (!name || !studentId || !studentClass) {
-        alert('Please fill all required fields');
-        return;
-    }
+  if (!name || !studentId || !studentClass) {
+    alert("Please fill all required fields");
+    return;
+  }
 
-    // Here you would typically send this data to your backend
-    console.log('Adding student:', { name, studentId, studentClass, division, email, phone, address });
-    
-    alert(`Student ${name} added successfully! (Demo mode)`);
-    document.getElementById('addStudentForm').reset();
-    showSubTab('students-tab', 'student-list-subtab');
+  // Here you would typically send this data to your backend
+  console.log("Adding student:", {
+    name,
+    studentId,
+    studentClass,
+    division,
+    email,
+    phone,
+    address,
+  });
+
+  alert(`Student ${name} added successfully! (Demo mode)`);
+  document.getElementById("addStudentForm").reset();
+  showSubTab("students-tab", "student-list-subtab");
 }
 
 // Simple save manual attendance function
 function saveManualAttendance() {
-    const studentId = document.getElementById('manualStudentId').value;
-    const studentClass = document.getElementById('manualClassSelect').value;
-    const division = document.getElementById('manualDivisionSelect').value;
-    const status = document.getElementById('attendanceStatusSelect').value;
-    const remarks = document.getElementById('attendanceRemarks').value;
+  const studentId = document.getElementById("manualStudentId").value;
+  const studentClass = document.getElementById("manualClassSelect").value;
+  const division = document.getElementById("manualDivisionSelect").value;
+  const status = document.getElementById("attendanceStatusSelect").value;
+  const remarks = document.getElementById("attendanceRemarks").value;
 
-    if (!studentId || !studentClass || !division) {
-        alert('Please fill all required fields');
-        return;
-    }
+  if (!studentId || !studentClass || !division) {
+    alert("Please fill all required fields");
+    return;
+  }
 
-    // Here you would typically send this data to your backend
-    console.log('Saving attendance:', { studentId, studentClass, division, status, remarks });
-    
-    alert(`Attendance marked successfully for Student ID: ${studentId} (Demo mode)`);
-    document.getElementById('manualAttendanceForm').reset();
+  // Here you would typically send this data to your backend
+  console.log("Saving attendance:", {
+    studentId,
+    studentClass,
+    division,
+    status,
+    remarks,
+  });
+
+  alert(
+    `Attendance marked successfully for Student ID: ${studentId} (Demo mode)`,
+  );
+  document.getElementById("manualAttendanceForm").reset();
 }
 
 // Setup Teacher Profile
@@ -1712,55 +1930,59 @@ function loadReportsContent() {
 
 // Load Settings content
 function loadSettingsContent() {
-    setupSettingsTab();
+  setupSettingsTab();
 }
 
 function saveSettings() {
+  const settingsData = {
+    attendanceThreshold: parseInt(
+      document.getElementById("attendanceThreshold").value,
+    ),
+    lateArrivalMinutes: parseInt(
+      document.getElementById("lateArrivalMinutes").value,
+    ),
+    autoMarkAbsentMinutes: parseInt(
+      document.getElementById("autoMarkAbsentMinutes").value,
+    ),
+    manualOverride: document.getElementById("manualOverride").checked,
+    sendAlerts: document.getElementById("sendAlerts").checked,
+  };
 
-    const settingsData = {
-        attendanceThreshold: parseInt(document.getElementById("attendanceThreshold").value),
-        lateArrivalMinutes: parseInt(document.getElementById("lateArrivalMinutes").value),
-        autoMarkAbsentMinutes: parseInt(document.getElementById("autoMarkAbsentMinutes").value),
-        manualOverride: document.getElementById("manualOverride").checked,
-        sendAlerts: document.getElementById("sendAlerts").checked
-    };
-
-    fetch("http://localhost:8080/api/settings/save", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(settingsData)
+  fetch("http://localhost:8080/api/settings/save", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(settingsData),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Server error: " + res.status);
+      }
+      return res.json();
     })
-    .then(res => {
-        if (!res.ok) {
-            throw new Error("Server error: " + res.status);
-        }
-        return res.json();
+    .then((data) => {
+      alert("Settings saved successfully ✅");
     })
-    .then(data => {
-        alert("Settings saved successfully ✅");
-    })
-    .catch(error => {
-        console.error("Save error:", error);
-        alert("Error saving settings ❌");
+    .catch((error) => {
+      console.error("Save error:", error);
+      alert("Error saving settings ❌");
     });
 }
 
 // ================= SETTINGS NAVIGATION =================
 
-document.querySelectorAll(".settings-item").forEach(item => {
+document.querySelectorAll(".settings-item").forEach((item) => {
   item.addEventListener("click", function () {
-
     const settingType = this.getAttribute("data-settings");
 
     // Hide all settings sections
-    document.querySelectorAll(".settings-section").forEach(section => {
+    document.querySelectorAll(".settings-section").forEach((section) => {
       section.classList.add("hidden");
     });
 
     // Remove active state
-    document.querySelectorAll(".settings-item").forEach(i => {
+    document.querySelectorAll(".settings-item").forEach((i) => {
       i.classList.remove("active");
     });
 
@@ -1778,16 +2000,13 @@ document.querySelectorAll(".settings-item").forEach(item => {
   });
 });
 
-
 function loadAllLeaves() {
-
   fetch("http://localhost:8080/api/leave/all")
-    .then(res => {
+    .then((res) => {
       if (!res.ok) throw new Error("Failed to fetch leaves");
       return res.json();
     })
-    .then(data => {
-
+    .then((data) => {
       const tbody = document.querySelector("#leaveTable tbody");
       tbody.innerHTML = "";
 
@@ -1796,7 +2015,7 @@ function loadAllLeaves() {
         return;
       }
 
-      data.forEach(leave => {
+      data.forEach((leave) => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -1820,35 +2039,33 @@ function loadAllLeaves() {
 
         tbody.appendChild(row);
       });
-
     })
-    .catch(err => console.error("Teacher load error:", err));
+    .catch((err) => console.error("Teacher load error:", err));
 }
 
 function approveLeave(id) {
   fetch(`http://localhost:8080/api/leave/approve/${id}`, {
-    method: "PUT"
+    method: "PUT",
   })
-    .then(res => res.text())
-    .then(message => {
+    .then((res) => res.text())
+    .then((message) => {
       alert(message);
       loadAllLeaves(); // Refresh table
     })
-    .catch(error => console.error("Approve error:", error));
+    .catch((error) => console.error("Approve error:", error));
 }
 
 function rejectLeave(id) {
   fetch(`http://localhost:8080/api/leave/reject/${id}`, {
-    method: "PUT"
+    method: "PUT",
   })
-    .then(res => res.text())
-    .then(message => {
+    .then((res) => res.text())
+    .then((message) => {
       alert(message);
       loadAllLeaves(); // Refresh table
     })
-    .catch(error => console.error("Reject error:", error));
+    .catch((error) => console.error("Reject error:", error));
 }
-
 
 // ===============================
 // BUTTON REFERENCES
@@ -1893,7 +2110,8 @@ function loadTeacherProfile() {
    OPEN EDIT PROFILE MODAL
 ================================ */
 
-document.getElementById("editTeacherProfileBtn")
+document
+  .getElementById("editTeacherProfileBtn")
   .addEventListener("click", openEditProfileModal);
 
 function openEditProfileModal() {
@@ -2139,41 +2357,41 @@ function generateQRForClass(className, division) {
 // Generate report
 let reportData = [];
 function generateReport() {
+  const classElement = document.getElementById("reportClass");
 
-    const classElement = document.getElementById('reportClass');
+  if (!classElement) {
+    alert("Report class dropdown not found!");
+    return;
+  }
 
-    if (!classElement) {
-        alert("Report class dropdown not found!");
+  const classFilter = classElement.value;
+
+  if (!classFilter) {
+    alert("Please select class");
+    return;
+  }
+
+  fetch(
+    `http://localhost:8080/api/attendance/report?className=${encodeURIComponent(classFilter)}`,
+  )
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch report");
+      return res.json();
+    })
+    .then((data) => {
+      const table = document.getElementById("reportTable");
+      const tbody = document.getElementById("reportTableBody");
+
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center">No Data Found</td></tr>`;
+        table.style.display = "table";
         return;
-    }
+      }
 
-    const classFilter = classElement.value;
-
-    if (!classFilter) {
-        alert("Please select class");
-        return;
-    }
-
-    fetch(`http://localhost:8080/api/attendance/report?className=${encodeURIComponent(classFilter)}`)
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to fetch report");
-            return res.json();
-        })
-        .then(data => {
-
-            const table = document.getElementById("reportTable");
-            const tbody = document.getElementById("reportTableBody");
-
-            tbody.innerHTML = "";
-
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center">No Data Found</td></tr>`;
-                table.style.display = "table";
-                return;
-            }
-
-            data.forEach(r => {
-                const row = `
+      data.forEach((r) => {
+        const row = `
                     <tr>
                         <td>${r.date}</td>
                         <td>${r.subject}</td>
@@ -2182,166 +2400,169 @@ function generateReport() {
                         <td>${r.status}</td>
                     </tr>
                 `;
-                tbody.innerHTML += row;
-            });
+        tbody.innerHTML += row;
+      });
 
-            table.style.display = "table";
-
-        })
-        .catch(err => {
-            console.error("Report error:", err);
-            alert("Error generating report");
-        });
+      table.style.display = "table";
+    })
+    .catch((err) => {
+      console.error("Report error:", err);
+      alert("Error generating report");
+    });
 }
 
 function downloadReport() {
+  const classElement = document.getElementById("reportClass");
 
-    const classElement = document.getElementById('reportClass');
+  if (!classElement) {
+    alert("Report class dropdown not found!");
+    return;
+  }
 
-    if (!classElement) {
-        alert("Report class dropdown not found!");
+  const classFilter = classElement.value;
+
+  if (!classFilter) {
+    alert("Please select class");
+    return;
+  }
+
+  // Fetch again separately
+  fetch(
+    `http://localhost:8080/api/attendance/report?className=${encodeURIComponent(classFilter)}`,
+  )
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch report");
+      return res.json();
+    })
+    .then((data) => {
+      if (data.length === 0) {
+        alert("No data available to download");
         return;
-    }
+      }
 
-    const classFilter = classElement.value;
+      let csvContent = "Date,Subject,Roll No,Name,Status\n";
 
-    if (!classFilter) {
-        alert("Please select class");
-        return;
-    }
+      data.forEach((r) => {
+        csvContent += `${r.date},${r.subject},${r.rollNo},${r.name},${r.status}\n`;
+      });
 
-    // Fetch again separately
-    fetch(`http://localhost:8080/api/attendance/report?className=${encodeURIComponent(classFilter)}`)
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to fetch report");
-            return res.json();
-        })
-        .then(data => {
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-            if (data.length === 0) {
-                alert("No data available to download");
-                return;
-            }
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "attendance_report.csv";
 
-            let csvContent = "Date,Subject,Roll No,Name,Status\n";
-
-            data.forEach(r => {
-                csvContent += `${r.date},${r.subject},${r.rollNo},${r.name},${r.status}\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "attendance_report.csv";
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-        })
-        .catch(err => {
-            console.error("Download error:", err);
-            alert("Error downloading report");
-        });
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    })
+    .catch((err) => {
+      console.error("Download error:", err);
+      alert("Error downloading report");
+    });
 }
 
 let attendanceChart = null;
 
 function generateAnalytics() {
-    const type = document.getElementById("analysisType").value;
+  const type = document.getElementById("analysisType").value;
 
-    if (!type) {
-        alert("Please select analysis type");
+  if (!type) {
+    alert("Please select analysis type");
+    return;
+  }
+
+  let url = "";
+  if (type === "subject")
+    url = "http://localhost:8080/api/attendance/analytics/subject";
+  else if (type === "department")
+    url = "http://localhost:8080/api/attendance/analytics/department";
+  else if (type === "date")
+    url = "http://localhost:8080/api/attendance/analytics/date";
+
+  fetch(url)
+    .then((res) => {
+      if (!res.ok) throw new Error("Server Error: " + res.status);
+      return res.json();
+    })
+    .then((data) => {
+      if (!data || data.length === 0) {
+        alert("No Data Found");
         return;
-    }
+      }
 
-    let url = "";
-    if (type === "subject") url = "http://localhost:8080/api/attendance/analytics/subject";
-    else if (type === "department") url = "http://localhost:8080/api/attendance/analytics/department";
-    else if (type === "date") url = "http://localhost:8080/api/attendance/analytics/date";
+      // 1️⃣ Populate HTML Table
+      const tbody = document.getElementById("analyticsTableBody");
+      tbody.innerHTML = "";
 
-    fetch(url)
-        .then(res => {
-            if (!res.ok) throw new Error("Server Error: " + res.status);
-            return res.json();
-        })
-        .then(data => {
-            if (!data || data.length === 0) {
-                alert("No Data Found");
-                return;
-            }
+      data.forEach((item) => {
+        // Determine category based on DTO
+        let category;
+        if (type === "date") category = item.date;
+        else if (type === "department")
+          category = item.subject; // subject field holds className in dept analytics
+        else category = item.subject; // subject-wise
 
-            // 1️⃣ Populate HTML Table
-            const tbody = document.getElementById("analyticsTableBody");
-            tbody.innerHTML = "";
+        const total = item.total;
+        const present = item.present;
+        const absent = item.absent;
+        const percent = total > 0 ? ((present / total) * 100).toFixed(2) : 0;
 
-            data.forEach(item => {
-                // Determine category based on DTO
-                let category;
-                if (type === "date") category = item.date;
-                else if (type === "department") category = item.subject; // subject field holds className in dept analytics
-                else category = item.subject; // subject-wise
-
-                const total = item.total;
-                const present = item.present;
-                const absent = item.absent;
-                const percent = total > 0 ? ((present / total) * 100).toFixed(2) : 0;
-
-                const row = document.createElement("tr");
-                row.innerHTML = `
+        const row = document.createElement("tr");
+        row.innerHTML = `
                     <td>${category}</td>
                     <td>${total}</td>
                     <td>${present}</td>
                     <td>${absent}</td>
                     <td>${percent}%</td>
                 `;
-                tbody.appendChild(row);
-            });
+        tbody.appendChild(row);
+      });
 
-            document.getElementById("analyticsTable").style.display = "table";
+      document.getElementById("analyticsTable").style.display = "table";
 
-            // 2️⃣ Prepare Chart
-            const labels = data.map(item => {
-                if (type === "date") return item.date;
-                else return item.subject; // subject or department
-            });
-            const presentData = data.map(item => item.present);
-            const absentData = data.map(item => item.absent);
+      // 2️⃣ Prepare Chart
+      const labels = data.map((item) => {
+        if (type === "date") return item.date;
+        else return item.subject; // subject or department
+      });
+      const presentData = data.map((item) => item.present);
+      const absentData = data.map((item) => item.absent);
 
-            const ctx = document.getElementById("attendanceChart").getContext("2d");
+      const ctx = document.getElementById("attendanceChart").getContext("2d");
 
-            if (attendanceChart) attendanceChart.destroy();
+      if (attendanceChart) attendanceChart.destroy();
 
-            attendanceChart = new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: "Present", data: presentData, backgroundColor: "#4CAF50" },
-                        { label: "Absent", data: absentData, backgroundColor: "#F44336" }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: type === "subject"
-                                ? "Subject-wise Attendance Analysis"
-                                : type === "department"
-                                    ? "Department-wise Attendance Analysis"
-                                    : "Date-wise Attendance Analysis"
-                        }
-                    },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-        })
-        .catch(err => {
-            console.error("Analytics error:", err);
-            alert("Error generating analytics: " + err.message);
-        });
+      attendanceChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            { label: "Present", data: presentData, backgroundColor: "#4CAF50" },
+            { label: "Absent", data: absentData, backgroundColor: "#F44336" },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text:
+                type === "subject"
+                  ? "Subject-wise Attendance Analysis"
+                  : type === "department"
+                    ? "Department-wise Attendance Analysis"
+                    : "Date-wise Attendance Analysis",
+            },
+          },
+          scales: { y: { beginAtZero: true } },
+        },
+      });
+    })
+    .catch((err) => {
+      console.error("Analytics error:", err);
+      alert("Error generating analytics: " + err.message);
+    });
 }
 
 // Edit class
@@ -2435,6 +2656,153 @@ function finalizeAttendance() {
       alert("Error finalizing attendance");
     });
 }
+
+// ===============================
+// 1️⃣ Load Teacher Subjects for Notes
+// ===============================
+// Load teacher subjects
+function loadTeacherSubjectsForNotes() {
+  const teacherName = document
+    .getElementById("headerName")
+    ?.textContent?.trim();
+  if (!teacherName) return;
+
+  fetch(`http://localhost:8080/api/classes/teacher/${teacherName}`)
+    .then((res) => res.json())
+    .then((classes) => {
+      const dropdown = document.getElementById("notesSubject");
+      dropdown.innerHTML = `<option value="">Select Subject</option>`;
+      const uniqueSubjects = new Set(classes.map((c) => c.subject));
+      uniqueSubjects.forEach(
+        (sub) =>
+          (dropdown.innerHTML += `<option value="${sub}">${sub}</option>`),
+      );
+    })
+    .catch((err) => console.error(err));
+}
+
+// Upload Notes
+function setupUploadNotes() {
+  const form = document.getElementById("uploadNotesForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const subject = document.getElementById("notesSubject").value;
+    const file = document.getElementById("notesFile").files[0];
+    if (!subject || !file) return alert("Select subject & file");
+
+    try {
+      const formData = new FormData();
+      formData.append("subject", subject);
+      formData.append("file", file);
+
+      const res = await fetch("http://localhost:8080/api/notes/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const msg = await res.text();
+      alert(msg);
+      form.reset();
+      loadUploadedNotes();
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed");
+    }
+  });
+}
+
+// Load uploaded notes
+async function loadUploadedNotes() {
+  const tableBody = document.getElementById("uploadedNotesTableBody");
+
+  if (!tableBody) {
+    console.error("Table body not found!");
+    return;
+  }
+
+  tableBody.innerHTML = "";
+
+  try {
+    const res = await fetch("http://localhost:8080/api/notes/all");
+    const data = await res.json();
+
+    console.log("Notes from API:", data);
+
+    if (!data || data.length === 0) {
+      tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4">No notes found</td>
+                </tr>
+            `;
+      return;
+    }
+
+    data.forEach((note) => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+                <td>${note.subject}</td>
+                <td>${note.fileName}</td>
+                <td>${note.uploadTime ? note.uploadTime.replace("T", " ") : "-"}</td>
+                <td>
+    <a href="http://localhost:8080/uploads/${note.fileUrl.split("/").pop()}" 
+       target="_blank" 
+       class="btn btn-sm btn-secondary">
+        View
+    </a>
+
+    <a href="http://localhost:8080/api/notes/download/${note.id}" 
+       class="btn btn-sm btn-primary">
+        Download
+    </a>
+
+    <button 
+        class="btn btn-sm btn-danger"
+        onclick="deleteNote(${note.id})">
+        Delete
+    </button>
+</td>
+            `;
+
+      tableBody.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Error loading notes:", err);
+    tableBody.innerHTML = `
+            <tr>
+                <td colspan="4">Error loading notes</td>
+            </tr>
+        `;
+  }
+}
+async function deleteNote(id) {
+
+    if (!confirm("Are you sure you want to delete this note?")) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:8080/api/notes/delete/${id}`, {
+            method: "DELETE"
+        });
+
+        const message = await res.text();
+        alert(message);
+
+        loadUploadedNotes(); // refresh table
+
+    } catch (error) {
+        console.error("Delete error:", error);
+        alert("Failed to delete note");
+    }
+}
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+  loadTeacherSubjectsForNotes();
+  setupUploadNotes();
+  loadUploadedNotes();
+});
 
 // Export functions for onclick attributes
 window.logout = logout;
@@ -2736,7 +3104,6 @@ async function loadSystemLanguage() {
 
 // Call on page load
 document.addEventListener("DOMContentLoaded", function () {
-
   const form = document.getElementById("generalSettingsForm");
   if (!form) return;
 
@@ -2745,16 +3112,17 @@ document.addEventListener("DOMContentLoaded", function () {
   // LOAD SETTINGS
   function loadSettingsForm() {
     fetch("http://localhost:8080/api/settings/general")
-      .then(res => res.json())
-      .then(data => {
-
+      .then((res) => res.json())
+      .then((data) => {
         savedSettings = data;
 
-        document.getElementById("instituteName").value = data.instituteName || "";
+        document.getElementById("instituteName").value =
+          data.instituteName || "";
         document.getElementById("timeZone").value = data.timeZone || "IST";
-        document.getElementById("dateFormat").value = data.dateFormat || "dd/mm/yyyy";
+        document.getElementById("dateFormat").value =
+          data.dateFormat || "dd/mm/yyyy";
       })
-      .catch(err => console.error("Error loading settings:", err));
+      .catch((err) => console.error("Error loading settings:", err));
   }
 
   loadSettingsForm();
@@ -2767,31 +3135,31 @@ document.addEventListener("DOMContentLoaded", function () {
       instituteName: document.getElementById("instituteName").value,
       timeZone: document.getElementById("timeZone").value,
       dateFormat: document.getElementById("dateFormat").value,
-      language: "en"   // fixed default
+      language: "en", // fixed default
     };
 
     fetch("http://localhost:8080/api/settings/general", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newSettings)
+      body: JSON.stringify(newSettings),
     })
-      .then(res => res.json())
-      .then(updated => {
+      .then((res) => res.json())
+      .then((updated) => {
         savedSettings = updated;
         alert("Settings updated successfully!");
       })
-      .catch(err => console.error("Error saving settings:", err));
+      .catch((err) => console.error("Error saving settings:", err));
   });
 
   // RESET
   form.addEventListener("reset", function () {
     setTimeout(() => {
-      document.getElementById("instituteName").value = savedSettings.instituteName;
+      document.getElementById("instituteName").value =
+        savedSettings.instituteName;
       document.getElementById("timeZone").value = savedSettings.timeZone;
       document.getElementById("dateFormat").value = savedSettings.dateFormat;
     }, 0);
   });
-
 });
 
 // Initialize form on page load

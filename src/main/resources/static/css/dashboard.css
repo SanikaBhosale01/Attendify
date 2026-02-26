@@ -777,7 +777,171 @@ tbody td {
   padding-left: 10px;
 }
 
-/* Form Container */
+/* Notes Section - Styled to match the provided design */
+#notesSection.section {
+    padding: 24px 32px;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+#notesSection .notes-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: transparent;
+}
+
+#notesSection .notes-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+}
+
+/* Notes grid layout */
+#notesSection .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* Individual note card styling */
+#notesSection .notes-grid > div {
+    background-color: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e9eef2;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+#notesSection .notes-grid > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
+    border-color: #d0d9e0;
+}
+
+/* Note title (PDF filename) */
+#notesSection .notes-grid > div > div:first-child {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0b1e33;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    word-break: break-word;
+    padding-right: 8px;
+}
+
+/* Subject line */
+#notesSection .notes-grid > div > div:nth-child(2) {
+    font-size: 14px;
+    color: #4b5e71;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #f1f4f7;
+    padding: 4px 12px;
+    border-radius: 30px;
+    width: fit-content;
+}
+
+/* Download link styling */
+#notesSection .notes-grid a,
+#notesSection .notes-grid .download-link,
+#notesSection .notes-grid [href*="Download"],
+#notesSection .notes-grid button.download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #f0f4fe;
+    color: #1a5cff;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    width: fit-content;
+    margin-top: 12px;
+    border: 1px solid transparent;
+}
+
+#notesSection .notes-grid a:hover,
+#notesSection .notes-grid .download-link:hover,
+#notesSection .notes-grid button.download-btn:hover {
+    background-color: #e0e8ff;
+    color: #0a3fbb;
+    border-color: #cbd5ff;
+}
+
+/* Add a subtle icon before filename (simulating the PDF/File icon) */
+#notesSection .notes-grid > div > div:first-child::before {
+    content: "📄";
+    margin-right: 8px;
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+/* Specific styling for the "Subject:" text */
+#notesSection .notes-grid > div > div:nth-child(2)::before {
+    content: "📌";
+    font-size: 12px;
+    margin-right: 4px;
+    opacity: 0.7;
+}
+
+/* Download link icon */
+#notesSection .notes-grid a::before,
+#notesSection .notes-grid .download-link::before,
+#notesSection .notes-grid button.download-btn::before {
+    content: "⬇️";
+    font-size: 14px;
+}
+
+/* Optional: style for when notes list is empty */
+#notesSection .notes-grid:empty::after {
+    content: "No notes available at the moment.";
+    display: block;
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    color: #64748b;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    #notesSection.section {
+        padding: 20px 16px;
+    }
+    
+    #notesSection .notes-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    
+    #notesSection .notes-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ensure hidden class works as expected */
+#notesSection.section.hidden {
+    display: none;
+}
+
+/* Leave Request */
 .leave-form {
   display: flex;
   flex-direction: column;
